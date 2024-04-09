@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Login page</title>
+{% endblock %}
+
+{% block body%}
+<div class="container">
+    <h1>Авторизация</h1>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul class="messages">
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    </ul>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <td>Логин</td>
+        <input type="text" class="form-control" name="login" id="login" placeholder="Введите логин"><br>
+        <td>Пароль</td>
+        <input type="text" class="form-control" name="password" id="password" placeholder="Введите пароль"><br>
+        <button class="btn btn-success" type="submit" value="login">Войти</button>
+        <p class="fs-5 text-body-secondary">Вы не зарегистрированы?<a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/registration">Регистрация</a></p>
+    </form>
+</div>
+{% endblock %}
