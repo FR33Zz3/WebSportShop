@@ -127,7 +127,9 @@ def Create():
             return "Получилась Ошибка"
     else:
         return render_template('create.html')
-
+@app.route ('/post/<int:id>/delete')
+def Delete(id):
+    return render_template("delete.html")
 @app.after_request
 def redirect_to_signin(response):
     if response.status_code == 401:
