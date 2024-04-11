@@ -1,10 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-</body>
-</html>
+{% block title %}
+<title>Login page</title>
+{% endblock %}
+
+{% block body%}
+<div class="container">
+    <h1>Авторизация</h1>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul class="messages">
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    </ul>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+    <td>Войти как: </td>
+        <a href="/login">Администратор</a>
+        <a href="/login">Пользователь</a>
+        <a href="/login">Менеджер</a>
+    </form>
+</div>
+{% endblock %}
