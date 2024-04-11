@@ -1,12 +1,11 @@
 {% extends 'base.html' %}
-
 {% block title %}
 <title>Login page</title>
 {% endblock %}
 
 {% block body%}
 <div class="container">
-    <h1>Авторизация</h1>
+    <h1 class="h1">Авторизация</h1>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
     <ul class="messages">
@@ -18,10 +17,11 @@
     {% endwith %}
 
     <form method="POST">
-    <td>Войти как: </td>
-        <a href="/login">Администратор</a>
-        <a href="/login">Пользователь</a>
-        <a href="/login">Менеджер</a>
+        <br><button class="btn btn-success"><a href="/login" class="me-3 py-2 link-body-emphasis text-decoration-none">Администратор</a></button>
+        <br>
+        <br><button class="btn btn-success"><a href="/login" class="me-3 py-2 link-body-emphasis text-decoration-none">Пользоваетль</a></button>
+        <br>
+        <br><button class="btn btn-success"><a href="/login" class="me-3 py-2 link-body-emphasis text-decoration-none">Менеджер</a></button>
     </form>
 </div>
 {% endblock %}
