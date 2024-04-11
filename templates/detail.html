@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Create Item</title>
+{% endblock %}
+
+{% block body%}
+<div class="container">
+    <h1>Добавить товар</h1>
+    <form method="POST">
+            <a href="/{{ el.id }}" class="w-100 btn btn-lg btn-success">Редактировать</a>
+            <a href="/{{ el.id }}" class="w-100 btn btn-danger">Удалить</a>
+    </form>
+</div>
+{% endblock %}
