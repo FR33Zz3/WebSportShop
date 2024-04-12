@@ -135,6 +135,23 @@ def Create():
     else:
         return render_template('create.html')
 
+@app.route ('/<int:id>/update', methods = ['POST', 'GET'])
+def Update(id):
+    item = Item.query.get(id)
+    if request.method == "POST":
+        item.title = request.form['title']
+        item.price = request.form['price']
+        item.text = request.form['text']
+
+        try:
+            db.session.commit()
+            return redirect('/index')
+        except:
+            return "Получилась ошибка"
+    else:
+
+        return render_template('update.html', item=item)
+
 
 @app.route ('/detailed/<int:id>')
 def Detailed(id):
