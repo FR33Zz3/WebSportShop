@@ -1,3 +1,5 @@
+import sqlalchemy.orm
+
 import sqlite3
 from flask import Flask, render_template, request, redirect, flash, url_for
 from flask_login import LoginManager, login_user, UserMixin, login_required, logout_user, login_manager
@@ -43,6 +45,10 @@ class User (db.Model, UserMixin):
 def load_user(user_id):
     return User.query.get(user_id)
 
+@app.route ('/')
+def selection():
+    return render_template('selection.html')
+
 @app.route ('/index')
 def Index():
     items = Item.query.order_by(Item.price).all()
@@ -73,7 +79,7 @@ def register():
     return render_template('reg.html')
 
 
-@app.route ('/', methods = ['POST', 'GET'])
+@app.route ('/login', methods = ['POST', 'GET'])
 def Login():
     login = request.form.get('login')
     password = request.form.get('password')
@@ -127,9 +133,22 @@ def Create():
             return "Получилась Ошибка"
     else:
         return render_template('create.html')
-@app.route ('/post/<int:id>/delete')
-def Delete(id):
-    return render_template("delete.html")
+
+
+@app.route ('/detailed/<int:id>')
+def Detailed(id):
+    return render_template('detail.html')
+
+@app.route ('/<int:id>/delete')
+def Del_Item(id):
+
+    item = Item.query.get_or_404(id)
+    try:
+        db.session.delete(item)
+        db.session.commit()
+        return redirect('/index')
+    except:
+        return "При удалении товара произошла ошибка"
 @app.after_request
 def redirect_to_signin(response):
     if response.status_code == 401:

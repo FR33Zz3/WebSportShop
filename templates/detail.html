@@ -3,7 +3,8 @@
 {% block title %}
 <title>about item</title>
 {% endblock %}
-
+{% for el in data %}
+{% endfor %}
 {% block body%}
 <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
       <symbol id="check2" viewBox="0 0 16 16">
@@ -39,11 +40,13 @@
     <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
     </div>
   </header>
-<div class="container">
-    <h1>О товаре</h1>
-    <form method="POST">
-        <a href="/{{ el.id }}" class="w-100 btn btn-lg btn-success">Редактировать</a>
-        <a href="/{{ el.id }}" class="w-100 btn btn-danger">Удалить</a>
-    </form>
-</div>
+
+    <div class="container">
+        <h1>О товаре</h1>
+        <form method="POST">
+            <a href="/detailed/{{ el.id }}/update" class="w-100 btn btn-lg btn-success">Редактировать</a>
+            <a href="/detailed/{{ el.id }}/delete" class="w-100 btn btn-danger">Удалить</a>
+        </form>
+    </div>
+
 {% endblock %}
