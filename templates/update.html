@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
 
 {% block title %}
-<title>Create Item</title>
+<title>about item</title>
 {% endblock %}
-
+{% for el in data %}
+{% endfor %}
 {% block body%}
 <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
       <symbol id="check2" viewBox="0 0 16 16">
@@ -31,7 +32,7 @@
       <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
         <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/create">Добавить товар</a>
         <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/registration">Регистрация</a>
-        <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/login">Вход</a>
+        <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/">Вход</a>
         <a class="py-2 link-body-emphasis text-decoration-none" href="/about">about</a>
       </nav>
     </div>
@@ -39,13 +40,16 @@
     <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
     </div>
   </header>
-<div class="container">
-    <h1>Добавить товар</h1>
-    <form method="POST">
-        <input type="text" class="form-control" name="title" id="title" placeholder="Введите название"><br>
-        <input type="number" class="form-control" name="price" id="price" placeholder="Введите цену"><br>
-        <input type="text" class="form-control" name="text" id="text" placeholder="Введите описание"><br>
-        <button class="btn btn-success" type="submit">Добавить товар</button>
-    </form>
-</div>
+
+    <div class="container">
+        <h1>О товаре</h1>
+        <form method="POST">
+            <input type="text" class="form-control" name="title" id="title" placeholder="Измените название"><br>
+            <input type="number" class="form-control" name="price" id="price" placeholder="Измените цену"><br>
+            <input type="sklad" class="form-control" name="amount"><br>
+            <input type="text" class="form-control" name="text" id="text" placeholder="Измените описание">
+            <button class="btn btn-success" type="submit">Изменить товар</button>
+        </form>
+    </div>
+
 {% endblock %}

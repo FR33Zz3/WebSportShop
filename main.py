@@ -29,7 +29,7 @@ class Item(db.Model):
     title = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Integer, nullable=False)
     isActive = db.Column(db.Boolean, default=True)
-#   Text = db.Column(db.Text, nullable=False)
+    text = db.Column(db.Text, nullable=False)
 
     def __repr__(self):
         return self.title
@@ -58,7 +58,7 @@ def Index():
 def About():
     return render_template('about.html')
 
-@app.route ('/registration', methods = ['POST', 'GET'])
+@app.route ('/registration', methods=['POST', 'GET'])
 def register():
     if request.method == "POST":
         login = request.form.get('login')
@@ -79,7 +79,7 @@ def register():
     return render_template('reg.html')
 
 
-@app.route ('/login', methods = ['POST', 'GET'])
+@app.route ('/login', methods=['POST', 'GET'])
 def Login():
     login = request.form.get('login')
     password = request.form.get('password')
@@ -123,8 +123,9 @@ def Create():
     if request.method == "POST":
         title = request.form['title']
         price = request.form['price']
+        text = request.form['text']
 
-        item = Item(title=title, price=price)
+        item = Item(title=title, price=price, text=text)
         try:
             db.session.add(item)
             db.session.commit()
