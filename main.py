@@ -40,6 +40,8 @@ class User (db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     login = db.Column(db.String(128), nullable=True, unique=True)
     password = db.Column(db.String(255), nullable=False)
+    fio = db.Column(db.String(255), nullable=True)
+    email = db.Column(db.String(255), nullable=True, unique=True)
 
 @manager.user_loader
 def load_user(user_id):
@@ -61,20 +63,22 @@ def About():
 @app.route ('/registration', methods=['POST', 'GET'])
 def register():
     if request.method == "POST":
+        email = request.form.get('email')
+        fio = request.form.get(('fio'))
         login = request.form.get('login')
         password = request.form.get('password')
         password2 = request.form.get('password2')
 
-        if not (login and password and password2):
+        if not (email and fio and login and password and password2):
             flash('Заполните все поля')
         elif password != password2:
             flash('Пароли не совпадают')
         else:
             hashed_pwd = generate_password_hash(password)
-            new_user = User(login=login, password=hashed_pwd)
+            new_user = User(login=login, password=hashed_pwd, fio=fio, email=email)
             db.session.add(new_user)
             db.session.commit()
-            return redirect(url_for('login'))
+            return redirect(url_for('Login'))
 
     return render_template('reg.html')
 

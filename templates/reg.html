@@ -18,14 +18,24 @@
     {% endwith %}
 
     <form method="POST">
+        <td>Ф.И.О.</td>
+        <input type="text" class="form-control" name="fio" id="fio"
+               placeholder="Введите Ф.И.О."><br>
+         <td>Электронная почта</td>
+        <input type="text" class="form-control" name="email" id="email"
+               placeholder="Введите E-mail"><br>
         <td>Логин</td>
-        <input type="text" class="form-control" name="login" id="login" placeholder="Введите логин"><br>
+        <input type="text" class="form-control" name="login" id="login"
+               placeholder="Введите логин"><br>
         <td>Пароль</td>
-        <input type="text" class="form-control" name="password" id="password" placeholder="Введите пароль"><br>
+        <input type="text" class="form-control" name="password" id="password"
+               placeholder="Введите пароль"><br>
         <td>Повторите пароль</td>
-        <input type="text" class="form-control" name="password2" id="password2" placeholder="Повторите пароль"><br>
+        <input type="text" class="form-control" name="password2" id="password2"
+               placeholder="Повторите пароль"><br>
         <button class="btn btn-success" type="submit" value="register">Зарегистрироваться</button>
-        <p class="fs-5 text-body-secondary">Уже зарегистрированы?</p><a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/login">Войти</a>
+        <p class="fs-5 text-body-secondary">Уже зарегистрированы?</p>
+        <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/login">Войти</a>
     </form>
 </div>
 {% endblock %}
