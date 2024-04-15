@@ -64,18 +64,18 @@ def About():
 def register():
     if request.method == "POST":
         email = request.form.get('email')
-        fio = request.form.get(('fio'))
+        fullname = request.form.get('fullname')
         login = request.form.get('login')
         password = request.form.get('password')
         password2 = request.form.get('password2')
 
-        if not (email and fio and login and password and password2):
+        if not (email and fullname and login and password and password2):
             flash('Заполните все поля')
         elif password != password2:
             flash('Пароли не совпадают')
         else:
             hashed_pwd = generate_password_hash(password)
-            new_user = User(login=login, password=hashed_pwd, fio=fio, email=email)
+            new_user = User(login=login, password=hashed_pwd, fullname=fullname, email=email)
             db.session.add(new_user)
             db.session.commit()
             return redirect(url_for('Login'))
@@ -83,7 +83,7 @@ def register():
     return render_template('reg.html')
 
 
-@app.route ('/login', methods=['POST', 'GET'])
+@app.route('/login', methods=['POST', 'GET'])
 def Login():
     login = request.form.get('login')
     password = request.form.get('password')
@@ -158,7 +158,7 @@ def Update(id):
 
 
 @app.route ('/detailed/<int:id>')
-def Detailed(id):
+def Detailed():
     return render_template('detail.html')
 
 @app.route ('/<int:id>/delete')
