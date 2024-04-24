@@ -45,16 +45,18 @@ class User (db.Model, UserMixin):
 
 @manager.user_loader
 def load_user(user_id):
-    return User.query.get(user_id)
+    user = db.session.get(User, user_id)
 
 @app.route ('/')
 def selection():
     return render_template('selection.html')
 
 @app.route ('/index')
-def Index():
+def Index(fio):
+    Fio = fio
+    print(Fio)
     items = Item.query.order_by(Item.price).all()
-    return render_template('index.html', data=items)
+    return render_template('index.html', data=items, Fio=fio)
 
 @app.route ('/about')
 def About():
@@ -94,8 +96,9 @@ def Login():
         if user and check_password_hash(user.password, password):
             login_user(user)
 
+            fio = user.fio
+            #print(fio)
             return redirect('/index')
-            flash("Вы вошли как администратор")
         else:
             flash("Неверный пароль")
     else:
@@ -155,7 +158,6 @@ def Update(id):
     else:
 
         return render_template('update.html', item=item)
-
 
 @app.route ('/detailed/<int:id>')
 def Detailed():
