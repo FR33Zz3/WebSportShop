@@ -28,6 +28,7 @@ class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Integer, nullable=False)
+    amount = db.Column(db.Integer, nullable=False)
     isActive = db.Column(db.Boolean, default=True)
     text = db.Column(db.Text, nullable=False)
 
@@ -53,18 +54,18 @@ def selection():
 
 @app.route ('/index')
 def Index():
-                    # Извлекаем фамилию из сессии и отображаем её в поисковой строке
-        fio = session['fio']
+
+        fio = session['fio'] # Извлекает фамилию из сессии и отображает её в поисковой строке
         #balance = session['balance']
         print(fio)
         #print(balance)
         item = Item.query.order_by(Item.price).all()
         return render_template('index.html',  data=item, fio=fio)
 
-@app.route ('/about')
+"""@app.route ('/about')
 def About():
     return render_template('about.html')
-
+"""
 @app.route ('/registration', methods=['POST', 'GET'])
 def register():
     if request.method == "POST":
@@ -115,14 +116,6 @@ def logout():
 @app.route ('/buy/<int:id>')
 @login_required
 def Item_buy(id):
-    api = Api(merchant_id=1396424,
-              secret_key='test')
-    checkout = Checkout(api=api)
-    data = {
-        "currency": "USD",
-        "amount": 3000
-    }
-    url = checkout.url(data).get('checkout_url')
     return render_template('buy.html')
 
 @app.route('/create', methods = ['POST', 'GET'])
@@ -131,8 +124,8 @@ def Create():
         title = request.form['title']
         price = request.form['price']
         text = request.form['text']
-
-        item = Item(title=title, price=price, text=text)
+        amount = request.form['amount']
+        item = Item(title=title, price=price, text=text, amount=amount)
         try:
             db.session.add(item)
             db.session.commit()

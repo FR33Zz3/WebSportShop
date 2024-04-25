@@ -46,6 +46,7 @@
             <input type="text" class="form-control" name="title" id="title" value="{{ item.title }}" placeholder="Измените название"><br>
             <input type="number" class="form-control" name="price" id="price" value="{{ item.price }}" placeholder="Измените цену"><br>
             <textarea name="text" id="text" class="form-control" placeholder="Введите описание товара">{{ item.text }}</textarea>
+            <textarea name="text" id="amount" class="form-control" placeholder="Введите количество товара на складе">{{ amount }}</textarea>
             <button class="btn btn-success" type="submit">Изменить товар</button>
         </form>
     </div>
