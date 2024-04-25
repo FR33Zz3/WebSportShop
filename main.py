@@ -5,7 +5,6 @@ from flask import Flask, render_template, request, redirect, flash, url_for, ses
 from flask_login import LoginManager, login_user, UserMixin, login_required, logout_user, login_manager
 from flask_sqlalchemy import SQLAlchemy
 
-from cloudipsp import Api, Checkout
 from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
@@ -43,6 +42,7 @@ class User (db.Model, UserMixin):
     password = db.Column(db.String(255), nullable=False)
     fio = db.Column(db.String(255), nullable=True)
     email = db.Column(db.String(255), nullable=True, unique=True)
+    balance = db.Column(db.Numeric(10, 2), default=5000)
 
 @manager.user_loader
 def load_user(id):
@@ -56,11 +56,11 @@ def selection():
 def Index():
 
         fio = session['fio'] # Извлекает фамилию из сессии и отображает её в поисковой строке
-        #balance = session['balance']
+        balance = session['balance']
         print(fio)
-        #print(balance)
+        print(balance)
         item = Item.query.order_by(Item.price).all()
-        return render_template('index.html',  data=item, fio=fio)
+        return render_template('index.html',  data=item, fio=fio, balance=balance)
 
 """@app.route ('/about')
 def About():
@@ -98,6 +98,7 @@ def Login():
 
         if user_id and check_password_hash(user_id.password, password):
             session['fio'] = user_id.fio  # Сохраняем фамилию пользователя в сессии
+            session['balance'] = user_id.balance  # Сохраняем фамилию пользователя в сессии
             return redirect('/index')
             flash("Вы вошли как администратор")
         else:
@@ -116,7 +117,10 @@ def logout():
 @app.route ('/buy/<int:id>')
 @login_required
 def Item_buy(id):
-    return render_template('buy.html')
+    print(id)
+    print()
+
+    #return render_template('buy.html')
 
 @app.route('/create', methods = ['POST', 'GET'])
 def Create():

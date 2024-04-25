@@ -25,15 +25,15 @@
 <header>
     <div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
       <a href="/" class="d-flex align-items-center link-body-emphasis text-decoration-none">
-        <p class="fs-4"></p>
-          <p class=" p-3 fs-5 d-flex align-items-center link-body-emphasis text-decoration-none padding-left">{{fio}}</p>
+          <p class=" p-3 fs-5 d-flex align-items-center text-decoration-none padding-left">{{fio}}</p>
+          <p class="fs-5"> баланс: {{ balance }}₽</p>
       </a>
 
       <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
         <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/create">Добавить товар</a>
         <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/">Регистрация</a>
         <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/">Вход</a>
-        <a class="py-2 link-body-emphasis text-decoration-none" href="/about">about</a>
+        <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/index">Главная</a>
       </nav>
     </div>
 
@@ -61,7 +61,7 @@
             <h1 class="card-title pricing-card-title"><small class="text-body-secondary fw-light">₽</small>{{ el.price }}</h1>
             <ul class="list-unstyled mt-3 mb-4">
               <li>{{ el.text }}</li>
-                <p class="fs-4">{{ el.amount }} штук</p>
+                <p class="fs-4">{{ el.amount }} шт.</p>
             </ul>
             <a href="/buy/{{ el.id }}" class="w-100 btn btn-lg btn-outline-primary">Купить</a>
             <br><a href="/{{ el.id }}/update" class="w-100 btn btn-lg btn-success">Редактировать</a>
@@ -72,20 +72,12 @@
   {% endfor %}
 
 </div>
-
-<h1 class="display-4 fw-normal text-body-emphasis">Списко товаров закончился</h1>
+<h1 class="display-4 fw-normal text-body-emphasis">Список товаров закончился</h1>
       <p class="fs-5 text-body-secondary"></p>
-
   <main>
     <h2 class="display-6 text-center mb-4">Краткая информация</h2>
-
   </main>
-
-
 </div>
 <script src="/docs/5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-
-
-
 </body>
 {% endblock %}
