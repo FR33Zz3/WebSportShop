@@ -1,7 +1,7 @@
 import sqlalchemy.orm
 
 import sqlite3
-from flask import Flask, render_template, request, redirect, flash, url_for
+from flask import Flask, render_template, request, redirect, flash, url_for, session
 from flask_login import LoginManager, login_user, UserMixin, login_required, logout_user, login_manager
 from flask_sqlalchemy import SQLAlchemy
 
@@ -44,8 +44,8 @@ class User (db.Model, UserMixin):
     email = db.Column(db.String(255), nullable=True, unique=True)
 
 @manager.user_loader
-def load_user(user_id):
-    return User.query.get(user_id)
+def load_user(id):
+    return User.query.get(id)
 
 @app.route ('/')
 def selection():
@@ -53,8 +53,11 @@ def selection():
 
 @app.route ('/index')
 def Index():
-    items = Item.query.order_by(Item.price).all()
-    return render_template('index.html', data=items)
+                    # Извлекаем фамилию из сессии и отображаем её в поисковой строке
+        fio = session['fio']
+        print(fio)
+        item = Item.query.order_by(Item.price).all()
+        return render_template('index.html',  data=item, fio=fio)
 
 @app.route ('/about')
 def About():
@@ -64,7 +67,7 @@ def About():
 def register():
     if request.method == "POST":
         email = request.form.get('email')
-        fio = request.form.get(('fio'))
+        fio = request.form.get('fio')
         login = request.form.get('login')
         password = request.form.get('password')
         password2 = request.form.get('password2')
@@ -82,18 +85,16 @@ def register():
 
     return render_template('reg.html')
 
-
 @app.route ('/login', methods=['POST', 'GET'])
 def Login():
     login = request.form.get('login')
     password = request.form.get('password')
 
     if login and password:
-        user = User.query.filter_by(login=login).first()
+        user_id = User.query.filter_by(login=login).first()
 
-        if user and check_password_hash(user.password, password):
-            login_user(user)
-
+        if user_id and check_password_hash(user_id.password, password):
+            session['fio'] = user_id.fio  # Сохраняем фамилию пользователя в сессии
             return redirect('/index')
             flash("Вы вошли как администратор")
         else:
@@ -122,7 +123,7 @@ def Item_buy(id):
     url = checkout.url(data).get('checkout_url')
     return str(id)
 
-@app.route ('/create', methods = ['POST', 'GET'])
+@app.route('/create', methods = ['POST', 'GET'])
 def Create():
     if request.method == "POST":
         title = request.form['title']
@@ -139,7 +140,7 @@ def Create():
     else:
         return render_template('create.html')
 
-@app.route ('/<int:id>/update', methods = ['POST', 'GET'])
+@app.route('/<int:id>/update', methods = ['POST', 'GET'])
 def Update(id):
     item = Item.query.get(id)
     if request.method == "POST":
@@ -157,11 +158,11 @@ def Update(id):
         return render_template('update.html', item=item)
 
 
-@app.route ('/detailed/<int:id>')
+@app.route('/detailed/<int:id>')
 def Detailed(id):
     return render_template('detail.html')
 
-@app.route ('/<int:id>/delete')
+@app.route('/<int:id>/delete')
 def Del_Item(id):
 
     item = Item.query.get_or_404(id)
