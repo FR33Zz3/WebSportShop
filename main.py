@@ -55,7 +55,9 @@ def selection():
 def Index():
                     # Извлекаем фамилию из сессии и отображаем её в поисковой строке
         fio = session['fio']
+        #balance = session['balance']
         print(fio)
+        #print(balance)
         item = Item.query.order_by(Item.price).all()
         return render_template('index.html',  data=item, fio=fio)
 
@@ -121,7 +123,7 @@ def Item_buy(id):
         "amount": 3000
     }
     url = checkout.url(data).get('checkout_url')
-    return str(id)
+    return render_template('buy.html')
 
 @app.route('/create', methods = ['POST', 'GET'])
 def Create():
