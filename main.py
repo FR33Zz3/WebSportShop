@@ -1,7 +1,7 @@
 import sqlalchemy.orm
 
 import sqlite3
-from flask import Flask, render_template, request, redirect, flash, url_for, session
+from flask import Flask, render_template, request, redirect, flash, url_for, session, jsonify
 from flask_login import LoginManager, login_user, UserMixin, login_required, logout_user, login_manager
 from flask_sqlalchemy import SQLAlchemy
 
@@ -44,7 +44,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(255), nullable=False)
     fio = db.Column(db.String(255), nullable=True)
     email = db.Column(db.String(255), nullable=True, unique=True)
-    balance = db.Column(db.Numeric(10, 2), default=5000)
+    balance = db.Column(db.Integer, default=5000)
 
 
 @manager.user_loader
@@ -125,17 +125,21 @@ def logout():
 
 @app.route('/buy/<int:id>')
 def Item_buy(id):
-        item = Item.query.filter_by(id=id).all()
-        money = session['balance']
-        if not item:
-            return 'Item not found', 404
-        print(id)
-        print(item)
-        print()
-        print(money)
-        return render_template('buy.html')
+    item = Item.query.filter_by(id=id).first_or_404()
+    balance = session.get('balance', 0)
+    cost = item.price
+    amount = item.amount
+    print(id)
+    print(cost)
+    print(balance)
 
-
+    if balance >= cost:
+        session['balance'] = balance - cost
+        item.amount = amount - 1
+        db.session.commit()
+        return redirect(url_for('.Index'))
+    else:
+        return jsonify({'message': 'Not enough balance to buy this item.'}), 400  # Возвращаем сообщение об ошибке'''
 @app.route('/create', methods=['POST', 'GET'])
 def Create():
     if request.method == "POST":
