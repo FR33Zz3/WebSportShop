@@ -126,14 +126,12 @@ def logout():
 @app.route('/buy/<int:id>')
 def Item_buy(id):
         item = Item.query.filter_by(id=id).all()
-        if id==id:
-            price = item.query.get(Item.price)
         money = session['balance']
         if not item:
             return 'Item not found', 404
         print(id)
         print(item)
-        print(price)
+        print()
         print(money)
         return render_template('buy.html')
 
