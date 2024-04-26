@@ -16,6 +16,7 @@ db = SQLAlchemy(app)
 manager = LoginManager(app)
 manager.init_app(app)
 
+
 # БД - Таблица - название
 # Таблица
 # id     title   price   isActive
@@ -34,7 +35,8 @@ class Item(db.Model):
     def __repr__(self):
         return self.title
 
-class User (db.Model, UserMixin):
+
+class User(db.Model, UserMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -44,29 +46,34 @@ class User (db.Model, UserMixin):
     email = db.Column(db.String(255), nullable=True, unique=True)
     balance = db.Column(db.Numeric(10, 2), default=5000)
 
+
 @manager.user_loader
 def load_user(id):
     return User.query.get(id)
 
-@app.route ('/')
+
+@app.route('/')
 def selection():
     return render_template('selection.html')
 
-@app.route ('/index')
-def Index():
 
-        fio = session['fio'] # Извлекает фамилию из сессии и отображает её в поисковой строке
-        balance = session['balance']
-        print(fio)
-        print(balance)
-        item = Item.query.order_by(Item.price).all()
-        return render_template('index.html',  data=item, fio=fio, balance=balance)
+@app.route('/index')
+def Index():
+    fio = session['fio']  # Извлекает фамилию из сессии и отображает её в поисковой строке
+    balance = session['balance']
+    print(fio)
+    print(balance)
+    item = Item.query.order_by(Item.price).all()
+    return render_template('index.html', data=item, fio=fio, balance=balance)
+
 
 """@app.route ('/about')
 def About():
     return render_template('about.html')
 """
-@app.route ('/registration', methods=['POST', 'GET'])
+
+
+@app.route('/registration', methods=['POST', 'GET'])
 def register():
     if request.method == "POST":
         email = request.form.get('email')
@@ -88,7 +95,8 @@ def register():
 
     return render_template('reg.html')
 
-@app.route ('/login', methods=['POST', 'GET'])
+
+@app.route('/login', methods=['POST', 'GET'])
 def Login():
     login = request.form.get('login')
     password = request.form.get('password')
@@ -108,21 +116,29 @@ def Login():
 
     return render_template('log.html')
 
+
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return 'вы вышли'
 
-@app.route ('/buy/<int:id>')
-@login_required
+@app.route('/buy/<int:id>')
 def Item_buy(id):
-    print(id)
-    print()
+        item = Item.query.filter_by(id=id).all()
+        if id==id:
+            price = item.query.get(Item.price)
+        money = session['balance']
+        if not item:
+            return 'Item not found', 404
+        print(id)
+        print(item)
+        print(price)
+        print(money)
+        return render_template('buy.html')
 
-    #return render_template('buy.html')
 
-@app.route('/create', methods = ['POST', 'GET'])
+@app.route('/create', methods=['POST', 'GET'])
 def Create():
     if request.method == "POST":
         title = request.form['title']
@@ -139,7 +155,8 @@ def Create():
     else:
         return render_template('create.html')
 
-@app.route('/<int:id>/update', methods = ['POST', 'GET'])
+
+@app.route('/<int:id>/update', methods=['POST', 'GET'])
 def Update(id):
     item = Item.query.get(id)
     if request.method == "POST":
@@ -156,14 +173,12 @@ def Update(id):
 
         return render_template('update.html', item=item)
 
-
 @app.route('/detailed/<int:id>')
 def Detailed(id):
     return render_template('detail.html')
 
 @app.route('/<int:id>/delete')
 def Del_Item(id):
-
     item = Item.query.get_or_404(id)
     try:
         db.session.delete(item)
@@ -171,14 +186,8 @@ def Del_Item(id):
         return redirect('/index')
     except:
         return "При удалении товара произошла ошибка"
-@app.after_request
-def redirect_to_signin(response):
-    if response.status_code == 401:
-        return redirect(url_for('/login') + '?next=' + request.url)
-    return response
 
-
-if __name__ =="__main__":
+if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     app.run(debug=True)
