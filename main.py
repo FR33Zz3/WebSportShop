@@ -1,13 +1,18 @@
 import sqlalchemy.orm
 
+from flask_wtf import RecaptchaField
+from wtforms import Form
+
 import sqlite3
 from flask import Flask, render_template, request, redirect, flash, url_for, session, jsonify
 from flask_login import LoginManager, login_user, UserMixin, login_required, logout_user, login_manager
 from flask_sqlalchemy import SQLAlchemy
+import verify
 
 from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
+
 app.secret_key = 'some secret code123@#'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///store.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -15,14 +20,6 @@ db = SQLAlchemy(app)
 
 manager = LoginManager(app)
 manager.init_app(app)
-
-
-# БД - Таблица - название
-# Таблица
-# id     title   price   isActive
-# 1      Adidas  4490    True
-# 2      Nike    5490    True
-# 3      Puma    9900    False
 
 class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -35,7 +32,6 @@ class Item(db.Model):
     def __repr__(self):
         return self.title
 
-
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
 
@@ -46,32 +42,50 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(255), nullable=True, unique=True)
     balance = db.Column(db.Integer, default=5000)
 
-
 @manager.user_loader
 def load_user(id):
     return User.query.get(id)
-
 
 @app.route('/')
 def selection():
     return render_template('selection.html')
 
-
 @app.route('/index')
 def Index():
     fio = session['fio']  # Извлекает фамилию из сессии и отображает её в поисковой строке
     balance = session['balance']
-    print(fio)
-    print(balance)
     item = Item.query.order_by(Item.price).all()
     return render_template('index.html', data=item, fio=fio, balance=balance)
 
+@app.route('/search', methods=['POST'])
+def search():
+    # Получение данных из формы поиска
+    query = request.form.get('query')
+    fio = session['fio']  # Извлекает фамилию из сессии и отображает её в поисковой строке
+    balance = session['balance']
+    # Поиск услуг по запросу в названии или описании
+    item = Item.query.filter((Item.title.like(f'%{query}%')) | (Item.text.like(f'%{query}%'))).all()
+    return render_template('index.html', data=item, fio=fio, balance=balance)
 
-"""@app.route ('/about')
-def About():
-    return render_template('about.html')
-"""
+@app.route('/sort', methods=['POST'])
+def sort():
+    # Получение значения сортировки из запроса
+    sort_by = request.form.get('sort_by')
 
+    # Получение списка всех услуг из базы данных с учетом сортировки
+    if sort_by == 'price_asc':
+        item = Item.query.order_by(Item.price.asc()).all()
+    elif sort_by == 'price_desc':
+        item = Item.query.order_by(Item.price.desc()).all()
+    elif sort_by == 'name_asc':
+        item = Item.query.order_by(Item.title.asc()).all()
+    elif sort_by == 'name_desc':
+        item = Item.query.order_by(Item.title.desc()).all()
+    else:
+        # Если не указано как сортировать, просто вернуть все услуги
+        item = Item.query.all()
+
+    return render_template('index.html', data=item)
 
 @app.route('/registration', methods=['POST', 'GET'])
 def register():
@@ -95,7 +109,6 @@ def register():
 
     return render_template('reg.html')
 
-
 @app.route('/login', methods=['POST', 'GET'])
 def Login():
     login = request.form.get('login')
@@ -110,12 +123,12 @@ def Login():
             return redirect('/index')
             flash("Вы вошли как администратор")
         else:
-            flash("Неверный пароль")
+            print('пользователь перенаправлен')
+            return redirect('submit')
     else:
         flash("Вы не зарегистрированы")
 
     return render_template('log.html')
-
 
 @app.route('/logout')
 @login_required
@@ -140,6 +153,8 @@ def Item_buy(id):
         return redirect(url_for('.Index'))
     else:
         return jsonify({'message': 'Not enough balance to buy this item.'}), 400  # Возвращаем сообщение об ошибке'''
+
+    return jsonify(results)
 @app.route('/create', methods=['POST', 'GET'])
 def Create():
     if request.method == "POST":
@@ -157,7 +172,6 @@ def Create():
     else:
         return render_template('create.html')
 
-
 @app.route('/<int:id>/update', methods=['POST', 'GET'])
 def Update(id):
     item = Item.query.get(id)
@@ -174,10 +188,6 @@ def Update(id):
     else:
 
         return render_template('update.html', item=item)
-
-@app.route('/detailed/<int:id>')
-def Detailed(id):
-    return render_template('detail.html')
 
 @app.route('/<int:id>/delete')
 def Del_Item(id):

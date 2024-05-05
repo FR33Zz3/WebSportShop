@@ -28,27 +28,33 @@
           <p class=" p-3 fs-5 d-flex align-items-center text-decoration-none padding-left">{{fio}}</p>
           <p class="fs-5"> баланс: {{ balance }}₽</p>
       </a>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
 
+    </script>
       <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
         <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/create">Добавить товар</a>
         <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/">Регистрация</a>
         <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/">Вход</a>
-        <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/index">Главная</a>
       </nav>
     </div>
-
     <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
+        <form action="/search" method="POST" class="mb-4 text-center">
+            <div class="input-group">
+                <input type="text" placeholder="Поиск товара" name="query">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">Поиск</button>
+                </div>
+            </div>
+        </form>
     </div>
   </header>
 <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
   <symbol id="check" viewBox="0 0 16 16">
-    <title>Check</title>
     <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"></path>
   </symbol>
 </svg>
-
 <div class="container py-3">
-
 <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
 
   {% for el in data %}
@@ -68,15 +74,18 @@
             <br><a href="/{{ el.id }}/delete" class="w-100 btn btn-danger">Удалить</a>
           </div>
         </div>
-
   {% endfor %}
-
 </div>
 <h1 class="display-4 fw-normal text-body-emphasis">Список товаров закончился</h1>
-      <p class="fs-5 text-body-secondary"></p>
-  <main>
-    <h2 class="display-6 text-center mb-4">Краткая информация</h2>
-  </main>
+      <div class="btn-group mb-4">
+            <form action="/sort" method="POST">
+                <button class="btn btn-outline-primary" name="sort_by" value="price_asc">По цене (возр.)</button>
+                <button class="btn btn-outline-primary" name="sort_by" value="price_desc">По цене (убыв.)</button>
+                <button class="btn btn-outline-primary" name="sort_by" value="name_asc">По имени (А-Я)</button>
+                <button class="btn btn-outline-primary" name="sort_by" value="name_desc">По имени (Я-А)</button>
+                <button class="btn btn-outline-primary" name="sort_by" value="default">Сбросить сортировку</button>
+            </form>
+        </div>
 </div>
 <script src="/docs/5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
