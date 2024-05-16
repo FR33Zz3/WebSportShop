@@ -1,13 +1,9 @@
 import sqlalchemy.orm
 
-from flask_wtf import RecaptchaField
-from wtforms import Form
-
 import sqlite3
 from flask import Flask, render_template, request, redirect, flash, url_for, session, jsonify
 from flask_login import LoginManager, login_user, UserMixin, login_required, logout_user, login_manager
 from flask_sqlalchemy import SQLAlchemy
-import verify
 
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -179,6 +175,7 @@ def Update(id):
         item.title = request.form['title']
         item.price = request.form['price']
         item.text = request.form['text']
+        item.amount = request.form['amount']
 
         try:
             db.session.commit()

@@ -23,31 +23,40 @@
       </symbol>
     </svg>
 <header>
-    <div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
+    <div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom bg-primary">
       <a href="/" class="d-flex align-items-center link-body-emphasis text-decoration-none">
-          <p class=" p-3 fs-5 d-flex align-items-center text-decoration-none padding-left">{{fio}}</p>
-          <p class="fs-5"> баланс: {{ balance }}₽</p>
+          <p class=" p-3 fs-5 d-flex align-items-center text-decoration-none padding-left text-white">{{fio}}</p>
+          <p class="fs-5 text-white"> баланс: {{ balance }}₽</p>
       </a>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script>
 
-    </script>
       <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
-        <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/create">Добавить товар</a>
-        <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/">Регистрация</a>
-        <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="/">Вход</a>
+        <a class="me-3 py-2 link-body-emphasis text-decoration-none text-white"  href="/create">Добавить товар</a>
+        <a class="me-3 py-2 link-body-emphasis text-decoration-none text-white" href="/">Регистрация</a>
+        <a class="me-3 py-2 link-body-emphasis text-decoration-none text-white" href="/">Вход</a>
       </nav>
     </div>
     <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
+
         <form action="/search" method="POST" class="mb-4 text-center">
             <div class="input-group">
                 <input type="text" placeholder="Поиск товара" name="query">
                 <div class="input-group-append">
-                    <button class="btn btn-primary" type="submit">Поиск</button>
+                    <button class="btn btn-primary" style="margin-left: 10px;" type="submit">Поиск</button>
                 </div>
             </div>
         </form>
+              <div class="btn-group mb-4">
+            <form action="/sort" method="POST">
+                <button class="btn btn-outline-primary" name="sort_by" value="price_asc">По цене (возр.)</button>
+                <button class="btn btn-outline-primary" name="sort_by" value="price_desc">По цене (убыв.)</button>
+                <button class="btn btn-outline-primary" name="sort_by" value="name_asc">По имени (А-Я)</button>
+                <button class="btn btn-outline-primary" name="sort_by" value="name_desc">По имени (Я-А)</button>
+                <button class="btn btn-outline-primary" name="sort_by" value="default">Сбросить сортировку</button>
+            </form>
+        </div>
     </div>
+
   </header>
 <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
   <symbol id="check" viewBox="0 0 16 16">
@@ -59,33 +68,25 @@
 
   {% for el in data %}
 
-  <div class="card mb-4 rounded-3 shadow-sm">
+  <div class="card mb-4 rounded-3 shadow-sm bg-primary text-light" style="margin-right: 20px;">
           <div class="card-header py-3">
             <h4 class="my-0 fw-normal">{{ el.title }}</h4>
           </div>
           <div class="card-body">
-            <h1 class="card-title pricing-card-title"><small class="text-body-secondary fw-light">₽</small>{{ el.price }}</h1>
+            <h1 class="card-title pricing-card-title"><small class="text-body-secondary text-light">₽</small>{{ el.price }}</h1>
             <ul class="list-unstyled mt-3 mb-4">
               <li>{{ el.text }}</li>
                 <p class="fs-4">{{ el.amount }} шт.</p>
             </ul>
-            <a href="/buy/{{ el.id }}" class="w-100 btn btn-lg btn-outline-primary">Купить</a>
-            <br><a href="/{{ el.id }}/update" class="w-100 btn btn-lg btn-success">Редактировать</a>
+            <a href="/buy/{{ el.id }}" class="w-100 btn btn-lg btn-outline-primary bg-light">Купить</a><br>
+            <br><a href="/{{ el.id }}/update" class="w-100 btn btn-lg btn-success">Редактировать</a><br>
             <br><a href="/{{ el.id }}/delete" class="w-100 btn btn-danger">Удалить</a>
           </div>
         </div>
   {% endfor %}
 </div>
 <h1 class="display-4 fw-normal text-body-emphasis">Список товаров закончился</h1>
-      <div class="btn-group mb-4">
-            <form action="/sort" method="POST">
-                <button class="btn btn-outline-primary" name="sort_by" value="price_asc">По цене (возр.)</button>
-                <button class="btn btn-outline-primary" name="sort_by" value="price_desc">По цене (убыв.)</button>
-                <button class="btn btn-outline-primary" name="sort_by" value="name_asc">По имени (А-Я)</button>
-                <button class="btn btn-outline-primary" name="sort_by" value="name_desc">По имени (Я-А)</button>
-                <button class="btn btn-outline-primary" name="sort_by" value="default">Сбросить сортировку</button>
-            </form>
-        </div>
+
 </div>
 <script src="/docs/5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
