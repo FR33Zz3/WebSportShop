@@ -1,21 +1,25 @@
-import sqlalchemy.orm
+import os
 
-import sqlite3
-from flask import Flask, render_template, request, redirect, flash, url_for, session, jsonify
-from flask_login import LoginManager, login_user, UserMixin, login_required, logout_user, login_manager
+from flask import Flask, render_template, request, redirect, flash, url_for, session
+from flask_login import LoginManager, login_user, UserMixin, login_required, logout_user
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-
 from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
+UPLOAD_FOLDER = 'static/images'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = 'some secret code123@#'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///store.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 manager = LoginManager(app)
 manager.init_app(app)
+
 
 class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -24,6 +28,7 @@ class Item(db.Model):
     amount = db.Column(db.Integer, nullable=False)
     isActive = db.Column(db.Boolean, default=True)
     text = db.Column(db.Text, nullable=False)
+    image_path = db.Column(db.String(255), nullable=True)
 
     def __repr__(self):
         return self.title
@@ -37,6 +42,24 @@ class User(db.Model, UserMixin):
     fio = db.Column(db.String(255), nullable=True)
     email = db.Column(db.String(255), nullable=True, unique=True)
     balance = db.Column(db.Integer, default=5000)
+
+@app.route('/index')
+@login_required
+def admin_dashboard():
+    item = Item.query.order_by(Item.price).all()
+    return render_template('index.html', data=item,  fio=session['fio'], balance=session['balance'])
+
+@app.route('/indexUsers')
+@login_required
+def manager_dashboard():
+    item = Item.query.order_by(Item.price).all()
+    return render_template('userIndex.html', data=item, fio=session['fio'], balance=session['balance'])
+
+@app.route('/indexUsers')
+@login_required
+def user_dashboard():
+    item = Item.query.order_by(Item.price).all()
+    return render_template('userIndex.html', data=item, fio=session['fio'], balance=session['balance'])
 
 @manager.user_loader
 def load_user(id):
@@ -107,50 +130,48 @@ def register():
 
 @app.route('/login', methods=['POST', 'GET'])
 def Login():
+    if request.method == 'GET':
+        role = request.args.get('role')
+        session['role'] = role
+        return render_template('log.html')
+
     login = request.form.get('login')
     password = request.form.get('password')
 
     if login and password:
-        user_id = User.query.filter_by(login=login).first()
+        user = User.query.filter_by(login=login).first()
 
-        if user_id and check_password_hash(user_id.password, password):
-            session['fio'] = user_id.fio  # Сохраняем фамилию пользователя в сессии
-            session['balance'] = user_id.balance  # Сохраняем фамилию пользователя в сессии
-            return redirect('/index')
-            flash("Вы вошли как администратор")
+        if user and check_password_hash(user.password, password):
+            login_user(user)
+            session['fio'] = user.fio  # Сохраняем фамилию пользователя в сессии
+            session['balance'] = user.balance  # Сохраняем баланс пользователя в сессии
+
+            role = session.get('role', 'user')  # По умолчанию роль 'user', если не указана
+            if role == 'admin':
+                return redirect(url_for('admin_dashboard'))
+            elif role == 'manager':
+                return redirect(url_for('manager_dashboard'))
+            else:
+                return redirect(url_for('user_dashboard'))
+
+            flash("Вы вошли как " + role)
         else:
-            print('пользователь перенаправлен')
-            return redirect('submit')
+            flash('Неправильный логин или пароль')
     else:
-        flash("Вы не зарегистрированы")
+        flash("Пожалуйста, заполните все поля")
 
     return render_template('log.html')
-
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return 'вы вышли'
 
-@app.route('/buy/<int:id>')
-def Item_buy(id):
-    item = Item.query.filter_by(id=id).first_or_404()
-    balance = session.get('balance', 0)
-    cost = item.price
-    amount = item.amount
-    print(id)
-    print(cost)
-    print(balance)
+@app.route('/buy')
+def Item_buy():
 
-    if balance >= cost:
-        session['balance'] = balance - cost
-        item.amount = amount - 1
-        db.session.commit()
-        return redirect(url_for('.Index'))
-    else:
-        return jsonify({'message': 'Not enough balance to buy this item.'}), 400  # Возвращаем сообщение об ошибке'''
+    return render_template('buy.html')
 
-    return jsonify(results)
 @app.route('/create', methods=['POST', 'GET'])
 def Create():
     if request.method == "POST":
@@ -158,13 +179,39 @@ def Create():
         price = request.form['price']
         text = request.form['text']
         amount = request.form['amount']
-        item = Item(title=title, price=price, text=text, amount=amount)
+
+        image_path = None
+
+        if 'image' in request.files:
+            image_file = request.files['image']
+            if image_file.filename != '':
+                print(f"Original filename: {image_file.filename}")
+                image_filename = secure_filename(image_file.filename)  # Обеспечивает безопасное имя файла
+                print(f"Secure filename: {image_filename}")
+                image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename).replace("\\", "/")
+                print(f"Image path: {image_path}")
+                try:
+                    image_file.save(image_path)
+                    print(f"File saved at: {image_path}")
+                except Exception as e:
+                    print(f"Ошибка сохранения файла: {e}")
+                    return "Ошибка сохранения файла"
+            else:
+                print('Файл изображения не выбран')
+        else:
+            print('Поле изображения отсутствует в форме')
+
+        item = Item(title=title, price=price, text=text, amount=amount, image_path=image_path)
+
         try:
             db.session.add(item)
             db.session.commit()
+            print('Элемент успешно добавлен с изображением')
+            print(f"Saved image filename in database: {image_filename}")
             return redirect('/index')
-        except:
-            return "Получилась Ошибка"
+        except Exception as e:
+            print(f"Ошибка базы данных: {e}")
+            return "Ошибка базы данных"
     else:
         return render_template('create.html')
 
@@ -177,14 +224,25 @@ def Update(id):
         item.text = request.form['text']
         item.amount = request.form['amount']
 
+        # Handle file upload
+        if 'image' in request.files:
+            image_file = request.files['image']
+            if image_file.filename != '':
+                image_path = f'static/images/{image_file.filename}'
+                image_file.save(image_path)
+                item.image = image_path
+
         try:
             db.session.commit()
             return redirect('/index')
         except:
             return "Получилась ошибка"
     else:
-
         return render_template('update.html', item=item)
+
+@app.route('/success')
+def success():
+    return render_template('success.html')
 
 @app.route('/<int:id>/delete')
 def Del_Item(id):

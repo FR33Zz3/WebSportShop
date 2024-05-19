@@ -39,10 +39,14 @@
   </header>
 
     <div class="container">
-        <h1>Составить заявку</h1>
+        <h1>Заявки</h1>
         <form method="POST">
-            <input class="form-control" placeholder="напишите количество товара"><br>
-            <a href="/success" class="btn btn-success" type="submit">Оставить заявку</a>
+            <input type="text" class="form-control" name="title" id="title" value="{{ item.title }}" placeholder="Измените название"><br>
+            <input type="number" class="form-control" name="price" id="price" value="{{ item.price }}" placeholder="Измените цену"><br>
+            <textarea name="text" id="text" class="form-control" placeholder="Измените описание товара">{{ item.text }}</textarea>
+            <input name="amount" id="amount" class="form-control" placeholder="{{ item.amount }}">
+             <input type="file" name="image"><br>
+            <button class="btn btn-success" type="submit">Принять заявки</button>
         </form>
     </div>
 

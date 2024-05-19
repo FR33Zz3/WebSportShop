@@ -40,12 +40,13 @@
     </div>
   </header>
 <div class="container">
-    <h1>Добавить товар</h1>
-    <form method="POST">
+    <h1>Добавить компонент</h1>
+    <form method="POST" enctype="multipart/form-data">
         <input type="text" class="form-control" name="title" id="title" placeholder="Введите название"><br>
         <input type="number" class="form-control" name="price" id="price" placeholder="Введите цену"><br>
         <input type="text" class="form-control" name="text" id="text" placeholder="Введите описание"><br>
         <input type="number" class="form-control" name="amount" id="amount" placeholder="Введите количество товара на складе"><br>
+        <input type="file" name="image"><br>
         <button class="btn btn-success" type="submit">Добавить товар</button>
     </form>
 </div>
